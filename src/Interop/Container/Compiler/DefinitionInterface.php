@@ -9,32 +9,20 @@ namespace Interop\Container\Compiler;
 interface DefinitionInterface
 {
     /**
-     * Returns a string of PHP code generating the container entry.
+     * Returns the identifier for this object in the container.
+     * If null, classes consuming this definition should assume the definition must be inlined.
      *
-     * The PHP code MUST be a closure or a PHP expression that evaluates to the value of the item.
-     *
-     * If the PHP code is a closure, then that closure MUST take one argument that is a
-     * Interop\Container\ContainerInterface object.
-     * The function MUST return the entry generated.
-     *
-     * For instance, this is a valid PHP string:
-     *
-     * "function(Interop\Container\ContainerInterface $container) {
-     *     $service = new MyService($container->get('my_dependency'));
-     *     return $service;
-     * }"
-     *
-     * If the PHP code is a PHP expression, then the PHP expression must evaluate to the value returned for the
-     * container entry.
-     *
-     * These are valid PHP expressions:
-     *
-     * "'localhost'" (a string)
-     * "CONST_VAR" (a constant)
-     * "array(42, 12)" (an array)
-     * "12 + 32" (any valid PHP statement that evaluates to something)
-     *
-     * @return string
+     * @return string|null
      */
-    public function toPhpCode();
+    public function getIdentifier();
+
+    /**
+     * Returns an InlineEntryInterface object representing the PHP code necessary to generate
+     * the container entry.
+     *
+     * @param string $containerVariable The name of the variable that allows access to the container instance. For instance: "$container", or "$this->container"
+     * @param array $usedVariables An array of variables that are already used and that should not be used when generating this code.
+     * @return InlineEntryInterface
+     */
+    public function toPhpCode($containerVariable, array $usedVariables = array());
 }
